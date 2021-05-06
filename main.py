@@ -1,8 +1,8 @@
 import tkinter as tk
-import subprocess
 from PIL import Image, ImageGrab
 from pynput import keyboard
 import thumbs
+import wm
 import configparser
 
 class Previewer(tk.Frame):
@@ -14,15 +14,12 @@ class Previewer(tk.Frame):
         # Falback to use until a screenshot is pulled from a workspace
         fallback_bg = Image.new('RGB', (1, 1), self.conf['fallback-bg'])
 
-        # Get all workspaces
-        workspaces = subprocess.check_output(["bspc", "query", "-D", "--names"], encoding='utf-8').split()
-
         # Create and pack a label for each workspace
-        self.previews = {w: tk.Label(self) for w in workspaces}
+        self.previews = {w: tk.Label(self) for w in wm.workspaces()}
         [p.pack(side=self.conf['side']) for p in self.previews.values()]
         
         # Put a placeholder in each label
-        [self.update(w, fallback_bg) for w in workspaces]
+        [self.update(p, fallback_bg) for p in self.previews]
 
     def update(self, name, image):
         img = thumbs.generate(image, name, self.thumb_conf)
@@ -54,7 +51,7 @@ class App(tk.Tk):
 
     def update(self):
         # Grab desktop number
-        workspace = subprocess.check_output(["bspc", "query", "-D", "-d", "focused", "--names"], encoding='utf-8').strip()
+        workspace = wm.current_workspace()
 
         # Grab screenshot
         image = ImageGrab.grab()
