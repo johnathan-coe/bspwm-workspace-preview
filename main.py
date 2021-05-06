@@ -11,23 +11,19 @@ class Previewer(tk.Frame):
         self.conf = ini['Previewer']
         self.thumb_conf = ini['Thumbnail']
 
-        workspaces = subprocess.check_output(["bspc", "query", "-D", "--names"]).decode('utf-8').split()
-
+        # Falback to use until a screenshot is pulled from a workspace
         fallback_bg = Image.new('RGB', (1, 1), self.conf['fallback-bg'])
 
-        self.previews = {}
-        for w in workspaces:
-            # Label holding the image
-            self.previews[w] = tk.Label(self)
-            self.previews[w].pack(side=self.conf['side'])
+        # Get all workspaces
+        workspaces = subprocess.check_output(["bspc", "query", "-D", "--names"]).decode('utf-8').split()
 
-            # Generate a thumbnail with a blank screenshot
-            thumb = thumbs.generate(fallback_bg, w, self.thumb_conf)
+        # Create and pack a label for each workspace
+        self.previews = {w: tk.Label(self) for w in workspaces}
+        [p.pack(side=self.conf['side']) for p in self.previews.values()]
+        
+        # Put a placeholder in each label
+        [self.update(w, fallback_bg) for w in workspaces]
 
-            # Place on the label
-            self.previews[w].image = thumb
-            self.previews[w].configure(image=thumb)
-            
     def update(self, name, image):
         img = thumbs.generate(image, name, self.thumb_conf)
         
