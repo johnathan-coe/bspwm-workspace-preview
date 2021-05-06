@@ -3,6 +3,7 @@ import subprocess
 from PIL import Image, ImageGrab
 from pynput import keyboard
 import thumbs
+import configparser
 
 class Previewer(tk.Frame):
     def __init__(self, parent):
@@ -33,8 +34,14 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
 
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+
+        # Config for this widget
+        self.conf = ini['BWP']
+
         self.overrideredirect(True)
-        self.geometry("+0+30")
+        self.geometry(f"+{self.conf['window-x']}+{self.conf['window-y']}")
 
         self.preview = Previewer(self)
         self.preview.pack(fill=tk.BOTH)
@@ -56,7 +63,7 @@ class App(tk.Tk):
         self.preview.update(workspace, image)
 
         # Schedule again after a second
-        self.after(1000, self.update)
+        self.after(self.conf['update-interval'], self.update)
 
     def show(self, key):
         if key == keyboard.Key.cmd:
