@@ -1,16 +1,20 @@
 from PIL import ImageDraw, ImageTk, ImageFont
 
-def generate(screenshot, desktop, selected=False):
-    thumb = screenshot.resize((128, 72))
+def generate(screenshot, desktop, conf):
+    w, h = int(conf['width']), int(conf['height'])
 
-    font = ImageFont.truetype("/usr/share/fonts/gnu-free/FreeSans.otf", 14)
-
+    # Scale the image
+    thumb = screenshot.resize((w, h))
     draw = ImageDraw.Draw(thumb)
-    text_width, text_height = draw.textsize(desktop, font)
     
-    draw.rectangle([0, 72-text_height-4, text_width+8, 72], outline=None, fill=(51, 51, 51))
-    draw.text((4, 72-text_height-2), desktop, (255, 255, 255), font=font)
+    font = ImageFont.truetype(conf['font-location'], int(conf['font-size']))
+    text_w, text_h = draw.textsize(desktop, font)
+    
+    # Pad the text
+    padx = int(conf['text-pad-x'])
+    pady = int(conf['text-pad-y'])
 
-    img = ImageTk.PhotoImage(thumb)
+    draw.rectangle([0, h-text_h-2*pady, text_w+2*padx, h], outline=None, fill=conf['text-bg'])
+    draw.text((padx, h-text_h-pady), desktop, conf['text-fg'], font=font)
 
-    return img
+    return ImageTk.PhotoImage(thumb)

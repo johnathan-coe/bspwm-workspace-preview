@@ -6,26 +6,30 @@ import thumbs
 import configparser
 
 class Previewer(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, ini):
         super().__init__(parent)
-        
+        self.conf = ini['Previewer']
+        self.thumb_conf = ini['Thumbnail']
+
         workspaces = subprocess.check_output(["bspc", "query", "-D", "--names"]).decode('utf-8').split()
+
+        fallback_bg = Image.new('RGB', (1, 1), self.conf['fallback-bg'])
 
         self.previews = {}
         for w in workspaces:
             # Label holding the image
             self.previews[w] = tk.Label(self)
-            self.previews[w].pack(side=tk.LEFT)
+            self.previews[w].pack(side=self.conf['side'])
 
             # Generate a thumbnail with a blank screenshot
-            thumb = thumbs.generate(Image.new('RGB', (128, 72), (51, 51, 51)), w)
+            thumb = thumbs.generate(fallback_bg, w, self.thumb_conf)
 
             # Place on the label
             self.previews[w].image = thumb
             self.previews[w].configure(image=thumb)
             
     def update(self, name, image):
-        img = thumbs.generate(image, name)
+        img = thumbs.generate(image, name, self.thumb_conf)
         
         self.previews[name].image = img
         self.previews[name].configure(image=img)
@@ -43,7 +47,7 @@ class App(tk.Tk):
         self.overrideredirect(True)
         self.geometry(f"+{self.conf['window-x']}+{self.conf['window-y']}")
 
-        self.preview = Previewer(self)
+        self.preview = Previewer(self, ini)
         self.preview.pack(fill=tk.BOTH)
 
         # Hide window until mod is pressed
