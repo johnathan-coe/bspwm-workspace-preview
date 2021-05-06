@@ -15,7 +15,7 @@ class Previewer(tk.Frame):
         fallback_bg = Image.new('RGB', (1, 1), self.conf['fallback-bg'])
 
         # Get all workspaces
-        workspaces = subprocess.check_output(["bspc", "query", "-D", "--names"]).decode('utf-8').split()
+        workspaces = subprocess.check_output(["bspc", "query", "-D", "--names"], encoding='utf-8').split()
 
         # Create and pack a label for each workspace
         self.previews = {w: tk.Label(self) for w in workspaces}
@@ -54,7 +54,7 @@ class App(tk.Tk):
 
     def update(self):
         # Grab desktop number
-        workspace = subprocess.check_output(["bspc", "query", "-D", "-d", "focused", "--names"]).decode('utf-8').strip()
+        workspace = subprocess.check_output(["bspc", "query", "-D", "-d", "focused", "--names"], encoding='utf-8').strip()
 
         # Grab screenshot
         image = ImageGrab.grab()
