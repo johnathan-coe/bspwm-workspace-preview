@@ -62,19 +62,23 @@ class App(tk.Tk):
         # Schedule again after a second
         self.after(self.conf['update-interval'], self.update)
 
-    def show(self, key):
-        if key == keyboard.Key.cmd:
-            self.deiconify()
+    def show(self):
+        self.deiconify()
 
-    def hide(self, key):
-        if key == keyboard.Key.cmd:
-            self.withdraw()
+    def hide(self):
+        self.withdraw()
 
+
+HOTKEY = keyboard.Key.cmd
 
 if __name__ == "__main__":
     a = App()
 
-    listener = keyboard.Listener(on_press=a.show, on_release=a.hide)
+    # Run a function if the key specified is the HOTKEY
+    check = lambda func : lambda key : func() if key == HOTKEY else 0
+
+    listener = keyboard.Listener(on_press=check(a.show),
+                                on_release=check(a.hide))
     listener.start()
 
     a.mainloop()
