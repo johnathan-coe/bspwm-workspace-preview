@@ -56,6 +56,9 @@ class App(tk.Tk):
         # Grab screenshot
         image = ImageGrab.grab()
 
+        # Crop to region of interest
+        image = image.crop(wm.current_bounds())
+
         # Update preview
         self.preview.update(workspace, image)
 
