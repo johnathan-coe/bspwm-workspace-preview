@@ -42,6 +42,7 @@ class App(tk.Tk):
         self.conf = ini['BWP']
 
         self.overrideredirect(True)
+        
         self.geometry(f"+{self.conf['window-x']}+{self.conf['window-y']}")
 
         self.preview = Previewer(self, ini)
@@ -71,6 +72,7 @@ class App(tk.Tk):
 
     def show(self):
         self.deiconify()
+        self.lift()
 
     def hide(self):
         self.withdraw()
