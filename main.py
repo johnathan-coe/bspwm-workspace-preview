@@ -1,9 +1,11 @@
+#!/usr/bin/python
 import tkinter as tk
 from PIL import Image, ImageGrab
 from pynput import keyboard
 import thumbs
 import wm
 import configparser
+import os
 
 class Previewer(tk.Frame):
     def __init__(self, parent, ini):
@@ -32,7 +34,9 @@ class App(tk.Tk):
         super().__init__()
 
         ini = configparser.ConfigParser()
-        ini.read('config.ini')
+
+        configPath = os.path.join(os.path.dirname(__file__), 'config.ini')
+        ini.read(configPath)
 
         # Config for this widget
         self.conf = ini['BWP']
