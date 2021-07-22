@@ -55,6 +55,9 @@ class App(tk.Tk):
         self.update()
 
     def update(self):
+        # Schedule again after a second
+        self.after(self.conf['update-interval'], self.update)
+        
         # Grab desktop number
         workspace = wm.current_workspace()
 
@@ -66,9 +69,6 @@ class App(tk.Tk):
 
         # Update preview
         self.preview.update(workspace, image)
-
-        # Schedule again after a second
-        self.after(self.conf['update-interval'], self.update)
 
     def show(self):
         self.deiconify()
